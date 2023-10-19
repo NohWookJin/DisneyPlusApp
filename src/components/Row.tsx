@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import instance from "../api/axios";
 import "./Row.css";
+import MovieModal from "./MovieModal";
 
 interface IRow {
   title: string;
@@ -8,8 +9,24 @@ interface IRow {
   fetchUrl: string;
 }
 
+export interface IMovie {
+  id: number;
+  original_language: string;
+  title: string;
+  name: string;
+  original_title: string;
+  overview: string;
+  video: boolean;
+  backdrop_path: string;
+  release_date: string;
+  vote_average: number;
+  vote_count: number;
+}
+
 const Row = ({ title, id, fetchUrl }: IRow) => {
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<IMovie[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [movieSelected, setMovieSelected] = useState<IMovie | null>(null);
 
   const refreshMovies = useCallback(async () => {
     const response = await instance.get(fetchUrl);
@@ -24,6 +41,11 @@ const Row = ({ title, id, fetchUrl }: IRow) => {
   const scrollRight = () => {
     const element = document.getElementById(id);
     if (element) element.scrollLeft += window.innerWidth - 80;
+  };
+
+  const handleClick = (movie: IMovie) => {
+    setModalOpen(true);
+    setMovieSelected(movie);
   };
 
   useEffect(() => {
@@ -45,7 +67,8 @@ const Row = ({ title, id, fetchUrl }: IRow) => {
               key={movie.id}
               className="row__poster"
               src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
-              alt={movie.name}
+              alt={movie.title}
+              onClick={() => handleClick(movie)}
             />
           ))}
         </div>
@@ -55,6 +78,9 @@ const Row = ({ title, id, fetchUrl }: IRow) => {
           </span>
         </div>
       </div>
+      {modalOpen && movieSelected && (
+        <MovieModal movies={movieSelected} setModalOpen={setModalOpen} />
+      )}
     </div>
   );
 };
