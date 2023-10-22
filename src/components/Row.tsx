@@ -28,22 +28,22 @@ const Row = ({ title, id, fetchUrl }: IRow) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [movieSelected, setMovieSelected] = useState<IMovie | null>(null);
 
-  const refreshMovies = useCallback(async () => {
+  const refreshMovies = useCallback(async (): Promise<void> => {
     const response = await instance.get(fetchUrl);
     setMovies(response.data.results);
   }, [fetchUrl]);
 
-  const scrollLeft = () => {
+  const scrollLeft = (): void => {
     const element = document.getElementById(id);
     if (element) element.scrollLeft -= window.innerWidth - 80;
   };
 
-  const scrollRight = () => {
+  const scrollRight = (): void => {
     const element = document.getElementById(id);
     if (element) element.scrollLeft += window.innerWidth - 80;
   };
 
-  const handleClick = (movie: IMovie) => {
+  const handleClick = (movie: IMovie): void => {
     setModalOpen(true);
     setMovieSelected(movie);
   };
